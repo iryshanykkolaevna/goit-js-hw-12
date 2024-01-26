@@ -4,18 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <title>goit-js-hw-11</title>
+    <title>goit-js-hw-12</title>
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <form class="search-form" autocomplete="off">
-      <label for="search-inp">
+    <load ="partials/header.html" />
+
+    <section>
+      <h1>Home Work №12</h1>
+      <!-- Path to images as from index.html file -->
+      <img src="./img/javascript.svg" alt="" />
+    </section>
+
+    <form class="search-form" autocomplete="on">
+      <label>
         <input
           class="search-inp"
           type="text"
@@ -27,6 +29,9 @@
     </form>
     <span class="loader"></span>
     <ul class="gallery"></ul>
+    <button class="load-btn is-hidden" type="button">Load more</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="module" src="./main.js"></script>
   </body>
 </html>
