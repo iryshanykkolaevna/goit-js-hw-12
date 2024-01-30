@@ -2,39 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>goit-js-hw-12</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./css/styles.css" />
+    <title>Goit-js-hw-12</title>
   </head>
   <body>
-    <load ="partials/header.html" />
-
-    <section>
-      <h1>Home Work №12</h1>
-      <!-- Path to images as from index.html file -->
-      <img src="./img/javascript.svg" alt="" />
-    </section>
-    <section>
-      <form class="search-form" autocomplete="on">
-        <label>
-          <input
-            class="search-inp"
-            type="text"
-            name="query"
-            placeholder="Search images..."
-          />
-        </label>
-        <button class="search-btn" type="submit">Search</button>
-      </form>
-      <span class="loader"></span>
-      <ul class="gallery"></ul>
-      <div class="button">
-        <button class="load-btn is-hidden" type="button">Load more</button>
-      </div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <div class="container">
+      <load ="partials/gallery.html" />
+    </div>
     <script type="module" src="./main.js"></script>
   </body>
 </html>

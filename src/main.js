@@ -1,166 +1,150 @@
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+import axios from "axios";
 
-import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
+iziToast.settings({
+  position: "topRight",
+  timeout: 5000,
+  resetOnHover: true,
+  transitionIn: "flipInX",
+  transitionOut: "flipOutX"
+});
 
-import axios from 'axios';
-
-const refs = {
-  form: document.querySelector('.search-form'),
-  input: document.querySelector('.search-inp'),
-  searchBtn: document.querySelector('.search-btn'),
-  gallery: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('.load-btn'),
-  loader: document.querySelector('.loader'),
-};
-
-axios.defaults.baseURL = 'https://pixabay.com/api';
-const API_KEY = '41899926-74a7536d4d492e936dbb67b5b';
-
-const hiddenClass = 'is-hidden';
-let page = 1;
-let query = '';
-let maxPage = 0;
-
-const simplyGallery = new SimpleLightbox('.gallery-item a', {
-  captionsData: 'alt',
+const lightbox = new SimpleLightbox(".gallery a", {
+  captionsData: "alt",
   captionDelay: 250,
 });
 
-refs.form.addEventListener('submit', onSearch);
+const API_KEY = "41671607-e33db59ab0332d081087354c8";
+const API_URL = "https://pixabay.com/api/?";
 
-async function onSearch(event) {
-  event.preventDefault();
-  refs.gallery.innerHTML = '';
-  page = 1;
-  refs.loadMoreBtn.classList.add(hiddenClass);
-  query = refs.form.query.value.trim();
+const reqParams = {
+  key: API_KEY,
+  orientation: "horizontal",
+  image_type: "photo",
+  safesearch: true,
+  per_page: 40,
+  page: 1,
+  q: ""
+};
 
-  if (!query) {
-    createMessage(
-      `The search field can't be empty! Please, enter your request!`
-    );
+const form = document.querySelector(".search-form");
+const loader = document.querySelector("div[data-loader='search']");
+const gallery = document.querySelector(".gallery");
+const btnLoadMore = document.querySelector("button[data-pagination]");
+const loaderLoadMore = document.querySelector("div[data-loader='pagination']");
+const btnGoUp = document.querySelector("button[data-goup]");
+
+form.addEventListener("submit", onSearch);
+btnLoadMore.addEventListener("click", onPagination);
+btnGoUp.addEventListener("click", () => window.scrollTo({top:  0, behavior: 'smooth'}));
+
+function onSearch(e) {
+  e.preventDefault();
+
+  const searchStr = form.elements.searchStr.value.trim();
+  form.reset();
+
+  if (!searchStr) {
+    iziToast.error({ message: "Search field cannot be empty!" });
     return;
   }
-  try {
-    const { hits, total } = await getImages(query);
-    maxPage = Math.ceil(total / 40);
-    createMarkup(hits, refs.gallery);
 
-    if (hits.length > 0) {
-      refs.loadMoreBtn.classList.remove(hiddenClass);
-      refs.loadMoreBtn.addEventListener('click', onLoadMore);
-    } else {
-      refs.loadMoreBtn.classList.add(hiddenClass);
-      createMessage(
-        `Sorry, there are no images matching your search query. Please, try again!`
-      );
+  gallery.innerHTML = "";
+  loader.style.display = "block";
+  btnLoadMore.style.display = "none";
+  btnGoUp.style.display = "none";
+
+  reqParams.q = searchStr;
+  reqParams.page = 1;
+  performAPI(reqParams)
+}
+
+function onPagination() {
+  loaderLoadMore.style.display = "block";
+  performAPI(reqParams);
+}
+
+async function performAPI(params) {
+  try {
+    const images = await axios.get(API_URL, { params })
+          .then(({ data }) => data);
+
+    if (images.hits.length == 0) {
+      iziToast.warning({ message: "Sorry, there are no images matching<br> your search query.Please try again!" });
+      return;
     }
-    showLoader(false);
+    updateGalleryMarkup(images.hits);
+    performPagination(images.totalHits);
+
   } catch (error) {
-    console.log(error);
+    iziToast.error({ message: `Api request error: ${error}` })
+
   } finally {
-    refs.form.reset();
-    if (page === maxPage) {
-      refs.loadMoreBtn.classList.add(hiddenClass);
-      createMessage(
-        "We're sorry, but you've reached the end of search results!"
-      );
-    }
+    loader.style.display = "none";
+    loaderLoadMore.style.display = "none";
   }
 }
 
-async function onLoadMore() {
-  page += 1;
-  try {
-    showLoader(true);
-    refs.loadMoreBtn.classList.add(hiddenClass);
-    const { hits } = await getImages(query, page);
-    createMarkup(hits, refs.gallery);
-    showLoader(false);
+function performPagination(imgCount) {
+  if (imgCount <= reqParams.per_page * reqParams.page) {
+    btnLoadMore.style.display = "none";
+    btnGoUp.style.display = "block";
+    iziToast.warning({ message: "We're sorry, but you've reached the end of search results." });
 
-    scrollImg();
+  } else {
+    reqParams.page += 1;
+    btnLoadMore.style.display = "block";
+  }
 
-    refs.loadMoreBtn.classList.remove(hiddenClass);
-  } catch (error) {
-    console.log(error);
-  } finally {
-    if (page === maxPage) {
-      refs.loadMoreBtn.classList.add(hiddenClass);
-      createMessage(
-        "We're sorry, but you've reached the end of search results!"
-      );
-    }
+  if (reqParams.page > 2) {
+    const elHeight = gallery.children[0].getBoundingClientRect().height;
+    window.scrollBy({ left:0, top: elHeight * 2 + 12, behavior: 'smooth'});
   }
 }
 
-async function getImages(query, page = 1) {
-  showLoader(true);
-  return axios
-    .get('/', {
-      params: {
-        key: API_KEY,
-        q: query,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-        per_page: 40,
-        page,
-      },
-    })
-    .then(({ data }) => data);
+function updateGalleryMarkup(images) {
+  gallery.insertAdjacentHTML("beforeend", images.map(fillGalleryCard).join(""));
+  lightbox.refresh();
 }
 
-function createMarkup(hits) {
-  const markup = hits
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) =>
-        `
-        <li class="gallery-item">
-  <a class="gallery-link" href="${largeImageURL}">
-    <img
-      class="gallery-image"
-      src="${webformatURL}"
-      alt="${tags}"
-    />
-    <p class="gallery-descr">likes: <span class="descr-span">${likes}</span> views: <span class="descr-span">${views}</span> comments: <span class="descr-span">${comments}</span> downloads: <span class="descr-span">${downloads}</span></p>
-  </a>
-</li>`
-    )
-    .join('');
-  refs.gallery.insertAdjacentHTML('beforeend', markup);
-  simplyGallery.refresh();
-}
-
-function createMessage(message) {
-  iziToast.show({
-    class: 'error-svg',
-    position: 'topRight',
-    icon: 'error-svg',
-    message: message,
-    maxWidth: '432',
-    messageColor: '#fff',
-    messageSize: '16px',
-    backgroundColor: '#EF4040',
-    close: false,
-    closeOnClick: true,
-  });
-}
-
-function showLoader(state = true) {
-  refs.loader.style.display = !state ? 'none' : 'inline-block';
-}
-
-function scrollImg() {
-  const rect = document.querySelector('.gallery-link').getBoundingClientRect();
-  window.scrollBy({ top: rect.height * 2, left: 0, behavior: 'smooth' });
-}
+const fillGalleryCard = ({
+  largeImageURL,
+  webformatURL,
+  tags,
+  likes,
+  views,
+  comments,
+  downloads,
+}) => {
+  return `
+    <li class="gallery-item">
+      <a class="gallery-link" href="${largeImageURL}">
+        <div class="item-wrap">
+          <div class="image-wrap">
+            <img class="gallery-image" src="${webformatURL}" alt="${tags}" />
+          </div>
+          <ul class="metabox-list">
+            <li class="mbox-info">
+              <p class="mbox-info-title">Likes</p>
+              <span class="mbox-info-descr">${likes}</span>
+            </li>
+            <li class="mbox-info">
+              <p class="mbox-info-title">Views</p>
+              <span class="mbox-info-descr">${views}</span>
+            </li>
+            <li class="mbox-info">
+              <p class="mbox-info-title">Comments</p>
+              <span class="mbox-info-descr">${comments}</span>
+            </li>
+            <li class="mbox-info">
+              <p class="mbox-info-title">Downloads</p>
+              <span class="mbox-info-descr">${downloads}</span>
+            </li>
+          </ul>
+        </div>
+      </a>
+    </li>`;
+};
