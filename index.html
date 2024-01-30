@@ -2,56 +2,44 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/goit-js-hw-11/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>goit-js-hw-12</title>
+    <link rel="icon" type="image/svg+xml" href="/goit-js-hw-11/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     
+    <title>Goit-js-hw-12</title>
     <script type="module" crossorigin src="/goit-js-hw-11/commonHelpers.js"></script>
-    <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-2618a76b.js">
-    <link rel="stylesheet" href="/goit-js-hw-11/assets/vendor-fd638ea2.css">
-    <link rel="stylesheet" href="/goit-js-hw-11/assets/index-a1a95769.css">
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-951421c8.js">
+    <link rel="stylesheet" href="/goit-js-hw-11/assets/vendor-eb6030bc.css">
+    <link rel="stylesheet" href="/goit-js-hw-11/assets/index-c93f19e0.css">
   </head>
   <body>
-    <header class="header">
-  <nav class="nav">
-    <ul class="nav-list">
-      <li class="nav-item">
-        <a href="./gallery.html" class="nav-link">Gallery</a>
-      </li>
+    <div class="container">
+      <form class="search-form">
+  <input
+    class="input-text"
+    name="searchStr"
+    type="text"
+    placeholder="Search images..."
+    required
+  />
+  <button class="btn-action" type="submit">Search</button>
+</form>
 
-      <!-- <li class="nav-item">
-        <a href="../2-imgelightbox.html" class="nav-link">Page 3</a>
-      </li> -->
-    </ul>
-  </nav>
-</header>
+<div class="loader" data-loader="search"></div>
+<ul class="gallery"></ul>
 
+<button class="btn-action btn-pagination" type="button" data-pagination>
+  Load more
+</button>
+<div class="loader" data-loader="pagination"></div>
+<button class="btn-action btn-goup" type="button" data-goup>UP</button>
 
-    <section>
-      <h1>Home Work №12</h1>
-      <!-- Path to images as from index.html file -->
-      <img src="/goit-js-hw-11/assets/javascript-8dac5379.svg" alt="" />
-    </section>
-    <section>
-      <form class="search-form" autocomplete="on">
-        <label>
-          <input
-            class="search-inp"
-            type="text"
-            name="query"
-            placeholder="Search images..."
-          />
-        </label>
-        <button class="search-btn" type="submit">Search</button>
-      </form>
-      <span class="loader"></span>
-      <ul class="gallery"></ul>
-      <div class="button">
-        <button class="load-btn is-hidden" type="button">Load more</button>
-      </div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </div>
     
   </body>
 </html>
