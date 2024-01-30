@@ -1,5 +1,3 @@
-'use strict';
-
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
@@ -24,6 +22,11 @@ const hiddenClass = 'is-hidden';
 let page = 1;
 let query = '';
 let maxPage = 0;
+
+const simplyGallery = new SimpleLightbox('.gallery-item a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 refs.form.addEventListener('submit', onSearch);
 
@@ -83,7 +86,7 @@ async function onLoadMore() {
   } catch (error) {
     console.log(error);
   } finally {
-    if (page > maxPage) {
+    if (page === maxPage) {
       refs.loadMoreBtn.classList.add(hiddenClass);
       createMessage(
         "We're sorry, but you've reached the end of search results!"
@@ -135,10 +138,7 @@ function createMarkup(hits) {
     )
     .join('');
   refs.gallery.insertAdjacentHTML('beforeend', markup);
-  const simplyGallery = new SimpleLightbox('.gallery-item a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
+  simplyGallery.refresh();
 }
 
 function createMessage(message) {
